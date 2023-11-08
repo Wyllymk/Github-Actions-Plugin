@@ -23,6 +23,9 @@ define( 'GITHUB_ACTIONS_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 /* The code is defining a constant called `GITHUB_ACTIONS_PLUGIN_URL` with the value of the plugin directory URL. */
 define( 'GITHUB_ACTIONS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
+/* The code is defining a constant called `GITHUB_ACTIONS_PLUGIN_NAME` with the value of the plugin's basename. */
+define( 'GITHUB_ACTIONS_PLUGIN_NAME', plugin_basename(__FILE__) );
+
 /**
  * The function "activate_externally" activates the "Github_Actions_Activate" class externally.
  */
