@@ -4,11 +4,11 @@
  */
 /**
  * Plugin Name: Github Actions
- * Plugin URI: #
+ * Plugin URI: https://github.com/Wyllymk/Github-Actions-Plugin/
  * Description: A WordPress plugin to input GitHub credentials and trigger GitHub Actions workflow.
- * Version: 1.0.1
+ * Version: 1.0.0
  * Author: Wilson
- * Author URI: #
+ * Author URI: https://atomicwebspace.com/
  * License: GPLv2 or later
  * Text Domain: github-actions 
 */
