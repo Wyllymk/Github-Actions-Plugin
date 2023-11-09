@@ -20,8 +20,7 @@ $repository_branch = get_option('repository_branch', '');
                 <div class="my-3 d-flex justify-content-between">
                     <label for="github-username" class="form-label">GitHub Username:</label>
                     <input type="text" class="form-control-lg" id="github-username" name="github_username"
-                        value="<?php echo esc_attr($github_username); ?>" placeholder="Enter GitHub Username"
-                        aria-describedby="usernameHelp" required>
+                        value="<?php echo esc_attr($github_username); ?>" placeholder="Enter GitHub Username" required>
                 </div>
                 <div class="mb-3 d-flex justify-content-between">
                     <label for="github-access-token" class="form-label">GitHub Access Token</label>
@@ -64,10 +63,10 @@ $repository_branch = get_option('repository_branch', '');
                 <tbody>
                     <tr>
                         <th scope="row">1</th>
-                        <td id="github_javascript_username"><?php echo esc_html($github_username); ?></td>
-                        <td><?php echo esc_html($github_access_token); ?></td>
-                        <td><?php echo esc_html($repository_name); ?></td>
-                        <td><?php echo esc_html($repository_branch); ?></td>
+                        <td id="github-javascript-username"><?php echo esc_html($github_username); ?></td>
+                        <td id="github-javascript-token"><?php echo esc_html($github_access_token); ?></td>
+                        <td id="github-javascript-name"><?php echo esc_html($repository_name); ?></td>
+                        <td id="github-javascript-branch"><?php echo esc_html($repository_branch); ?></td>
                     </tr>
                 </tbody>
             </table>

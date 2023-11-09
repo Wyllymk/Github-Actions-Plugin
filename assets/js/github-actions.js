@@ -50,11 +50,8 @@ function updateDisplayedCredentials() {
   let repositoryName = document.getElementById("repository-name").value;
   let repositoryBranch = document.getElementById("repository-branch").value;
 
-  document.getElementById("display-credentials").innerHTML = `
-                    <h3>Entered Credentials</h3>
-                    <p><strong>GitHub Username:</strong> ${githubUsername}</p>
-                    <p><strong>GitHub Access Token:</strong> ${githubAccessToken}</p>
-                    <p><strong>GitHub Repository:</strong> ${repositoryName}</p>
-                    <p><strong>Event Type:</strong> ${repositoryBranch}</p>
-                `;
+  document.getElementById("github-javascript-username").innerHTML = `${githubUsername}`;
+  document.getElementById("github-javascript-token").innerHTML = `${githubAccessToken}`;
+  document.getElementById("github-javascript-name").innerHTML = `${repositoryName}`;
+  document.getElementById("github-javascript-branch").innerHTML = `${repositoryBranch}`;
 }
