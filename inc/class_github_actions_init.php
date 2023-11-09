@@ -32,7 +32,7 @@ if( ! class_exists('Github_Actions_Init')){
         public static function enqueue_admin_scripts(){
             wp_enqueue_script('github-actions-script', GITHUB_ACTIONS_PLUGIN_URL . 'assets/js/github-actions.js');
             wp_enqueue_style('github-actions-style', GITHUB_ACTIONS_PLUGIN_URL . 'assets/css/github-actions.css');
-            wp_enqueue_style('bootstrap-style', GITHUB_ACTIONS_PLUGIN_URL . 'assets/css/bootstrap.min.css');
+            // wp_enqueue_style('bootstrap-style', GITHUB_ACTIONS_PLUGIN_URL . 'assets/css/bootstrap.min.css');
         }
 
         public static function admin_pages(){
