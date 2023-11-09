@@ -5,6 +5,7 @@
 if( ! class_exists('Github_Actions_Init')){
 
     class Github_Actions_Init{
+        
         private static $access_token;
         
         public static function register_services(){
@@ -23,9 +24,9 @@ if( ! class_exists('Github_Actions_Init')){
 
         public static function trigger_database_action(){
             $github_username = get_option('github_username', '');
-            $github_repository = get_option('github_repository', '');
             $github_access_token = get_option('github_access_token', '');
-            $event_type = get_option('github_event_type', ''); // Retrieve the event type from the database
+            $repository_name = get_option('repository_name', '');
+            $repository_branch = get_option('repository_branch', ''); 
         }
 
         public static function enqueue_admin_scripts(){
@@ -56,14 +57,14 @@ if( ! class_exists('Github_Actions_Init')){
             }
     
             $github_username = sanitize_text_field($_POST['github_username']);
-            $github_repository = sanitize_text_field($_POST['github_repository']);
             $github_access_token = sanitize_text_field($_POST['github_access_token']);
-            $github_event_type = sanitize_text_field($_POST['github_event_type']); // Get event type from the form
+            $repository_name = sanitize_text_field($_POST['repository_name']);
+            $repository_branch = sanitize_text_field($_POST['repository_branch']); // Get event type from the form
     
             update_option('github_username', $github_username);
-            update_option('github_repository', $github_repository);
             update_option('github_access_token', $github_access_token);
-            update_option('github_event_type', $github_event_type); // Save the event type to the database
+            update_option('repository_name', $repository_name);
+            update_option('repository_branch', $repository_branch); 
     
             echo 'Settings saved successfully.';
     
@@ -76,41 +77,91 @@ if( ! class_exists('Github_Actions_Init')){
             }
     
             $github_username = sanitize_text_field($_POST['github_username']);
-            $github_repository = sanitize_text_field($_POST['github_repository']);
             $github_access_token = sanitize_text_field($_POST['github_access_token']);
-            $github_event_type = sanitize_text_field($_POST['github_event_type']); // Get event type from the form
+            $repository_name = sanitize_text_field($_POST['repository_name']);
+            $repository_branch = sanitize_text_field($_POST['repository_branch']); // Get event type from the form
     
-            // Trigger the GitHub Actions workflow using $github_username, $github_repository, and $github_access_token
+            // Trigger the GitHub Actions Workflow using $github_username, $repository_name, and $github_access_token
             $repository_owner = $github_username;
-            $repository_name = $github_repository;
-            $event_type = $github_event_type; // Use the event type from the form
+            $repository_name = $repository_name;
+            $repository_branch = $repository_branch;
     
-            $url = "https://api.github.com/repos/{$repository_owner}/{$repository_name}/dispatches";
+            $url = "https://api.github.com/repos/{$repository_owner}/{$repository_name}/zipball/{$repository_branch}";
             $headers = array(
                 'Authorization: token ' . $github_access_token,
                 'Content-Type: application/json',
                 'User-Agent: GitHub Actions Trigger'
             );
-    
-            $data = json_encode(array('event_type' => $event_type));
-    
+
             $curl = curl_init($url);
-            curl_setopt($curl, CURLOPT_POST, 1);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            
+            // Set cURL options
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            
     
+            // Execute the cURL session and store the response
             $response = curl_exec($curl);
-            $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    
-            curl_close($curl);
-            var_dump($response);
-    
-            if ($http_status === 204) {
-                echo 'Workflow triggered successfully.';
-            } else {
-                echo 'Failed to trigger workflow.';
+
+            // Check for cURL errors
+            if (curl_errno($curl)) {
+                echo 'cURL error: ' . curl_error($ch);
+                exit;
             }
+
+            // Check the HTTP status code of the response
+            $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            if ($http_status !== 200) {
+                echo 'GitHub API returned a non-200 status code: ' . $http_status;
+                exit;
+            }
+
+            // Close the cURL session
+            curl_close($curl);
+
+            // Now, you can work with the $response data, which contains the ZIP archive of the repository.
+            // You can save it to a file or process it as needed.
+    
+            var_dump($response);
+
+            // Define the directory where you want to save the ZIP archive
+            // Get the WordPress uploads directory information
+            $upload_dir = wp_upload_dir();
+
+            // Define the path to save the ZIP archive in the uploads directory
+            $zip_file = $upload_dir['path'] . '/theme-archive.zip';
+
+            // Make sure the directory exists, create it if necessary
+            if (!file_exists($upload_dir['path'])) {
+                mkdir($upload_dir['path'], 0755, true);
+            }
+
+            // Now you can save the ZIP archive to the uploads directory
+            file_put_contents($zip_file, $response);
+
+            // Save the ZIP archive to a file
+            file_put_contents($zip_file, $response);
+
+            // Unzip the repository to the WordPress themes directory
+            $theme_directory = get_theme_root();
+            $zip = new ZipArchive;
+            if ($zip->open($zip_file) === TRUE) {
+                $zip->extractTo($theme_directory);
+                $zip->close();
+                echo 'ZIP archive has been extracted successfully.';
+            } else {
+                echo 'Failed to extract the ZIP archive.';
+            }
+
+            // Activate the theme in WordPress
+            
+            $new_theme = get_theme_root() . '/' . $theme_name; // Replace with the actual folder name of the theme
+            if (file_exists($new_theme)) {
+                switch_theme($new_theme);
+            }
+
+            // Optional: Delete the ZIP file if you no longer need it
+            unlink($zip_file);
     
             wp_die();
         }

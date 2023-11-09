@@ -12,9 +12,9 @@ if( ! class_exists('Github_Actions_Activate')){
 
         public static function github_actions_trigger_activate() {
             add_option('github_username', '');
-            add_option('github_repository', '');
             add_option('github_access_token', '');
-            add_option('github_event_type', ''); // Initialize the event type option
+            add_option('repository_name', '');
+            add_option('repository_branch', ''); 
         }
     }
     
