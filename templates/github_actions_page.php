@@ -42,13 +42,33 @@ $repository_branch = get_option('repository_branch', '');
                         required>
                 </div>
                 <div class="gat-col-buttons">
-                    <input type="button" class="button-primary" value="Save Settings" onclick="saveSettings()">
-                    <input type="button" class="button-primary" value="Trigger Workflow" onclick="triggerWorkflow()">
+                    <input type="button" id="save-button" class="button-primary" value="Save Settings"
+                        onclick="saveSettings()">
+                    <input type="button" id="trigger-button" class="button-primary" value="Trigger Workflow"
+                        onclick="triggerWorkflow()">
                 </div>
 
             </form>
 
             <div id="response"></div>
+
+            <label for="file">Downloading progress:</label>
+            <progress id="progress-bar" value="0" max="100"></progress>
+
+            <div class="lds-spinner" id="loading-spinner">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
         <div class="gat-container">
             <h3 class="gat-text">Entered Credentials:</h3>
