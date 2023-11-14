@@ -39,7 +39,7 @@
 .gat-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   width: 50%;
 }
 
@@ -58,8 +58,8 @@
 .gat-col input[type="text"],
 select {
   width: 50%;
-  padding: 12px 20px;
-  margin: 8px 0;
+  padding: 10px;
+  margin: 5px 0;
   display: inline-block;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -75,7 +75,7 @@ select {
 }
 
 .gat-col-buttons input[type="button"] {
-  width: 30%;
+  width: 40%;
   background-color: #f68b2a;
   border: #f68b2a 2px solid;
   color: white;

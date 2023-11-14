@@ -52,8 +52,8 @@ $repository_branch = get_option('repository_branch', '');
 
             <div id="response"></div>
 
-            <label for="file">Downloading progress:</label>
-            <progress id="progress-bar" value="0" max="100"></progress>
+            <!-- <label for="file">Downloading progress:</label>
+            <progress id="progress-bar" value="0" max="100"></progress> -->
 
             <div class="lds-spinner" id="loading-spinner">
                 <div></div>

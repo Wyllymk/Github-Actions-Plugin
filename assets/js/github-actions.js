@@ -17,6 +17,10 @@ function saveSettings() {
       document.getElementById("response").innerHTML = response;
       // Update the displayed credentials
       updateDisplayedCredentials();
+      // Set a timeout to clear the response after 5 seconds
+      setTimeout(function () {
+        document.getElementById("response").innerHTML = "";
+      }, 5000);
     }
   );
 }
@@ -40,7 +44,7 @@ function triggerWorkflow() {
   saveButton.disabled = true;
 
   // Show loading spinner (optional)
-  // document.getElementById("loading-spinner").style.display = "inline";
+  document.getElementById("loading-spinner").style.display = "inline";
   // Start fetching and updating progress
   fetchProgress();
 
