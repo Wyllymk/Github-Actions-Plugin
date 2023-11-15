@@ -5,44 +5,72 @@
 
 namespace GAP\Pages;
 
+use \GAP\Api\Github_Actions_Callbacks;
 use \GAP\Api\Github_Actions_Settings_Api;
-use \GAP\Theme\Github_Actions_Trigger_Workflow;
 use \GAP\Theme\Github_Actions_Save_Settings;
+use \GAP\Theme\Github_Actions_Trigger_Workflow;
+
 
 if( ! class_exists('Github_Actions_Admin')){
 
     class Github_Actions_Admin{
-                
+
+        public static $callbacks;
+
+        public static $settings;
+
+        public static $pages = array();
+
+        public static $sub_pages = array();
+       
         public static function register(){
+
+            self::$callbacks = new Github_Actions_Callbacks();
+
+            self::setPages();
+
+            self::setSubPages();
+
+            self::$settings = new Github_Actions_Settings_Api();
         
-            add_action( 'admin_menu', array(__CLASS__, 'adminPages') );
+            self::$settings->addPages(self::$pages)->withSubPage('Dashboard')->addSubPages(self::$sub_pages)->register();
 
-            /* Checking if the class exists and if it does, it will register the services. 
-            * This is a way to ensure that the class is loaded before calling its methods, preventing any errors or issues. 
-            */
-            if(class_exists('Github_Actions_Save_Settings')){
-                Github_Actions_Save_Settings::register();
-            }
-
-            /* Checking if the class exists and if it does, it will register the services. 
-            * This is a way to ensure that the class is loaded before calling its methods, preventing any errors or issues. 
-            */
-            if(class_exists('Github_Actions_Trigger_Workflow')){
-                Github_Actions_Trigger_Workflow::register();
-            }
         }
-
-        public static function adminPages(){
-            add_menu_page('Github Actions Trigger', 'Github Actions', 'manage_options', 'github-actions-trigger', array(__CLASS__, 'githubActionsPage'), 'dashicons-admin-site-alt', 110);
-        }
-
-        public static function githubActionsPage(){
-            if(file_exists(GITHUB_ACTIONS_PLUGIN_PATH . 'templates/github_actions_page.php')){
-                require_once (GITHUB_ACTIONS_PLUGIN_PATH . 'templates/github_actions_page.php');
-            }
-        }
-
         
+        public static function setPages(){
+            self::$pages = [
+                [
+                'page_title' => 'Github Actions Trigger',
+                'menu_title' => 'Github Actions',
+                'capability' => 'manage_options',
+                'menu_slug' => 'github-actions-trigger',
+                'callback' => [self::$callbacks, 'adminDashboard'],
+                'icon_url' => 'dashicons-admin-site-alt',
+                'position' => 110
+                ],
+            ];
+        }
+
+        public static function setSubPages(){
+            self::$sub_pages = [
+                [
+                    'parent_slug' => 'github-actions-trigger',
+                    'page_title' => 'Github Actions Themes',
+                    'menu_title' => 'Themes',
+                    'capability' => 'manage_options',
+                    'menu_slug' => 'github-actions-themes',
+                    'callback' => function(){ echo '<h1>Something is missing</h1>';},
+                ],
+                [
+                    'parent_slug' => 'github-actions-trigger',
+                    'page_title' => 'Github Actions Plugins',
+                    'menu_title' => 'Plugins',
+                    'capability' => 'manage_options',
+                    'menu_slug' => 'github-actions-plugins',
+                    'callback' => function(){ echo '<h1>Something is missing</h1>';},
+                ],
+            ];
+        }
 
     }
     
