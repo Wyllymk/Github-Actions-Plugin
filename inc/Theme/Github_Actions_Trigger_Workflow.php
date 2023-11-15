@@ -3,10 +3,12 @@
  * @package GithubActions
 */
 
+namespace GAP\Theme;
+
 if( ! class_exists('Github_Actions_Trigger_Workflow')){
 
     class Github_Actions_Trigger_Workflow{
-        public static function register_services(){
+        public static function register(){
             // Register AJAX actions
             add_action('wp_ajax_trigger_workflow', array(__CLASS__, 'triggerWorkflow')); 
         }

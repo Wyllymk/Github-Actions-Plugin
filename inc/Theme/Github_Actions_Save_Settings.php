@@ -3,10 +3,12 @@
  * @package GithubActions
 */
 
+namespace GAP\Theme;
+
 if( ! class_exists('Github_Actions_Save_Settings')){
 
     class Github_Actions_Save_Settings{
-        public static function register_services(){
+        public static function register(){
             // Register AJAX actions
             add_action('wp_ajax_save_settings', array(__CLASS__, 'saveSettings')); 
         }

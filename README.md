@@ -2,7 +2,13 @@
 
 A WordPress plugin to input GitHub credentials and trigger GitHub Actions workflow.
 
-- Plugin to trigger Github actions via http request from WordPress Dashboard
+- Plugin to trigger Github actions via https request from WordPress Dashboard
+
+Full list of sections and features incorporated in the Github Actions Plugin
+
+- Modular Administration Area
+
+* Ajax based Save and Trigger workflow
 
 # SETUP
 
