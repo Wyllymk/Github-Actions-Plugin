@@ -2,75 +2,17 @@
 /**
  * @package GithubActions
 */
-if( ! class_exists('Github_Actions_Init')){
 
-    class Github_Actions_Init{
-        
-        private static $access_token;
-        
-        public static function register_services(){
-            // Load saved credentials
-            self::$access_token = get_option('github_access_token', '');
-            self::trigger_database_action();
-        
-            add_action( 'admin_enqueue_scripts', array(__CLASS__, 'enqueue_admin_scripts') );
-            add_action( 'admin_menu', array(__CLASS__, 'admin_pages') );
-            add_filter( 'plugin_action_links_'.GITHUB_ACTIONS_PLUGIN_NAME, array(__CLASS__, 'settings_link') );
+namespace GAP\Theme;
 
+if( ! class_exists('Github_Actions_Trigger_Workflow')){
+
+    class Github_Actions_Trigger_Workflow{
+        public static function register(){
             // Register AJAX actions
-            add_action('wp_ajax_save_settings', array(__CLASS__, 'saveSettings'));
-            add_action('wp_ajax_trigger_workflow', array(__CLASS__, 'triggerWorkflow'));
+            add_action('wp_ajax_trigger_workflow', array(__CLASS__, 'triggerWorkflow')); 
         }
-
-        public static function trigger_database_action(){
-            $github_username = get_option('github_username', '');
-            $github_access_token = get_option('github_access_token', '');
-            $repository_name = get_option('repository_name', '');
-            $repository_branch = get_option('repository_branch', ''); 
-        }
-
-        public static function enqueue_admin_scripts(){
-            wp_enqueue_script('github-actions-script', GITHUB_ACTIONS_PLUGIN_URL . 'assets/js/github-actions.js');
-            wp_enqueue_style('github-actions-style', GITHUB_ACTIONS_PLUGIN_URL . 'assets/css/github-actions.css');
-            wp_enqueue_style('bootstrap-style', GITHUB_ACTIONS_PLUGIN_URL . 'assets/css/bootstrap.min.css');
-        }
-
-        public static function admin_pages(){
-            add_menu_page('Github Actions Trigger', 'Github Actions', 'manage_options', 'github-actions-trigger', array(__CLASS__, 'github_actions_page'), 'dashicons-admin-site-alt', 110);
-        }
-
-        public static function github_actions_page(){
-            if(file_exists(GITHUB_ACTIONS_PLUGIN_PATH . 'templates/github_actions_page.php')){
-                require_once (GITHUB_ACTIONS_PLUGIN_PATH . 'templates/github_actions_page.php');
-            }
-        }
-
-        public static function settings_link($links){
-            $settings_link = '<a href="admin.php?page=github-actions-trigger">Settings</a>';
-            array_push( $links, $settings_link);
-            return $links;
-        }
-
-        public static function saveSettings() {
-            if (!current_user_can('manage_options')) {
-                wp_die('Unauthorized');
-            }
-    
-            $github_username = sanitize_text_field($_POST['github_username']);
-            $github_access_token = sanitize_text_field($_POST['github_access_token']);
-            $repository_name = sanitize_text_field($_POST['repository_name']);
-            $repository_branch = sanitize_text_field($_POST['repository_branch']); // Get event type from the form
-    
-            update_option('github_username', $github_username);
-            update_option('github_access_token', $github_access_token);
-            update_option('repository_name', $repository_name);
-            update_option('repository_branch', $repository_branch); 
-    
-            echo 'Settings saved successfully.';
-    
-            wp_die();
-        }
-
+        
         public static function triggerWorkflow() {
             if (!current_user_can('manage_options')) {
                 wp_die('Unauthorized');
@@ -100,6 +42,23 @@ if( ! class_exists('Github_Actions_Init')){
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+            // Set up progress callback
+            curl_setopt($curl, CURLOPT_NOPROGRESS, false);
+            curl_setopt($curl, CURLOPT_PROGRESSFUNCTION, function ($ch, $downloadSize, $downloaded, $uploadSize, $uploaded) {
+                if ($downloadSize > 0) {
+                    $progress = round(($downloaded / $downloadSize) * 100);
+                    echo "Downloading: {$progress}%\n";
+                    ob_flush();
+                    flush();
+                    
+                    // Store the progress in the session and write/close the session
+                    session_start();
+                    $_SESSION['download_progress'] = $progress;
+                    session_write_close();
+                }
+                return 0;
+            });
     
             // Execute the cURL session and store the response
             $response = curl_exec($curl);
@@ -135,7 +94,10 @@ if( ! class_exists('Github_Actions_Init')){
 
             // Now you can save the ZIP archive to the uploads directory
             file_put_contents($zip_file, $response);
-
+            
+            $extractionMessage = '';
+            $activationMessage = '';
+            
             // Unzip the repository to the WordPress themes directory
             $theme_directory = get_theme_root();
             $zip = new ZipArchive;
@@ -148,25 +110,26 @@ if( ! class_exists('Github_Actions_Init')){
 
                 // Extract the contents to the destination folder
                 if ($zip->extractTo($theme_directory) && $zip->close()) {
-                    echo 'ZIP archive has been extracted successfully.';
+                    $extractionMessage = 'ZIP archive has been extracted successfully.';
 
                     // Activate the theme in WordPress
-                    switch_theme($first_entry);
+                    $theme_name = basename($first_entry);
+                    // Check if the theme exists
+                    if (wp_get_theme($theme_name)->exists()) {
+                        // Activate the theme using the "stylesheet" name
+                        switch_theme($theme_name);
+                        $activationMessage =  'Theme activated successfully.';
+                    } else {
+                        $activationMessage = 'Failed to activate the theme. The theme folder does not exist.';
+                    }
 
                     // Optional: Delete the ZIP file if you no longer need it
                     unlink($zip_file);
                 }else {
-                    echo 'Failed to extract the ZIP archive or close the ZipArchive.';
+                    $extractionMessage = 'Failed to extract the ZIP archive or close the ZipArchive.';
                 }
             } else {
-                echo 'Failed to open the ZIP archive.';
-            }
-
-            // Activate the theme in WordPress
-            
-            $new_theme = get_theme_root() . '/' . $theme_name; // Replace with the actual folder name of the theme
-            if (file_exists($new_theme)) {
-                switch_theme($new_theme);
+                $extractionMessage = 'Failed to open the ZIP archive.';
             }
 
             // Optional: Delete the ZIP file if you no longer need it
@@ -175,5 +138,5 @@ if( ! class_exists('Github_Actions_Init')){
             wp_die();
         }
     }
-    
+
 }
