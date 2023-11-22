@@ -1,157 +1,86 @@
-.gat-main-container {
-  height: 88vh;
-  width: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  background: url("../img/home-mask-r-1.avif") no-repeat fixed;
-  background-size: cover;
+/* NEW CSS */
+.ga-welcome-panel {
+  background-color: #fff;
+  padding: 20px 10px 10px;
+  border: 1px solid #ccd0d4;
+  box-shadow: 0 1px 1px rgb(0 0 0 / 4%);
+  line-height: 1.7;
+  font-size: 13px;
 }
 
-.gat-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.ga-welcome-panel-close {
+  color: #c3202f !important;
 }
 
-.gat-header h1 {
-  margin-left: 2rem;
-  font-size: xx-large;
+.ga-welcome-panel-close::before {
+  color: #c3202f !important;
 }
 
-.gat-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.gat-container {
-  width: 70%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: larger;
-}
-
-.gat-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 50%;
-}
-
-.gat-col {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.gat-col label {
-  font-weight: 500;
-  font-size: larger;
-}
-
-.gat-col input[type="text"],
-select {
-  width: 50%;
-  padding: 10px;
-  margin: 5px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.ga-welcome-panel .ga-welcome-panel-column-container {
   box-sizing: border-box;
-  font-size: 100%;
-}
-
-.gat-col-buttons {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  justify-content: center;
-}
-
-.gat-col-buttons input[type="button"] {
-  width: 40%;
-  background-color: #f68b2a;
-  border: #f68b2a 2px solid;
-  color: white;
-  padding: 10px 20px;
-  margin: 8px 0;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: larger;
-}
-.gat-col-buttons input[type="button"]:hover,
-.gat-col-buttons input[type="button"]:focus {
-  background-color: white;
-  border: #f68b2a 2px solid;
-  color: #f68b2a;
-  outline: none;
-}
-
-#response {
-  color: #c3202f;
   width: 100%;
-  font-size: larger;
-  font-weight: 600;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  clear: both;
+  display: grid;
+  z-index: 1;
+  padding: 0 20px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  align-self: flex-end;
+  background: #fff;
 }
 
-.gat-text {
-  font-size: x-large;
-  font-weight: 700;
+.nav-tabs {
+  float: left;
+  width: 90%;
+  margin: 0;
+  list-style-type: none;
+  border-bottom: 1px solid transparent;
 }
 
-.gat-table {
-  font-family: Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
+.nav-tabs > li {
+  float: left;
+  margin-bottom: -1px;
 }
 
-.gat-table td,
-.gat-table th {
+.nav-tabs > li > a {
+  margin-right: 2px;
+  line-height: 1.5px;
+  padding: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  float: inherit;
+  text-decoration: none;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: #555;
+  cursor: default;
+  background-color: #fff;
   border: 1px solid #ddd;
-  padding: 8px;
+  border-bottom-color: transparent;
 }
 
-.gat-table tr:nth-child(even) {
-  background-color: #f2f2f2;
+.tab-content > .tab-pane {
+  float: left;
+  width: 90%;
+  display: none;
 }
 
-.gat-table tr:hover {
-  backdrop-filter: blur(10px);
-}
-
-.gat-table th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: #c3202f;
-  color: white;
-  font-size: large;
-}
-.gat-table tr {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: rgba(84, 92, 89, 0.745);
-  color: white;
-  backdrop-filter: blur(4px);
+.tab-content > .tab-pane.active {
+  display: block;
+  padding: 10px;
+  background-color: #fff;
+  box-shadow: 0 5px 4px -2px rgba(0, 0, 0, 0.15);
 }
 
 .gat-footer {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  clear: both;
+  text-align: center;
+  padding: 20px;
 }
+/* NEW CSS END */
 
 /* SPINNER CSS */
 .lds-spinner {

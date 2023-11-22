@@ -1,0 +1,107 @@
+<?php
+// Check if the user has submitted the settings
+// WordPress adds the "settings-updated" $_GET parameter to the URL
+
+$is_update = isset($_GET['settings-updated']);
+
+// Determine the message based on the update status
+$message = $is_update ? __('Settings Updated', 'github-actions') : __('Settings Saved', 'github-actions');
+
+if ($is_update) {
+    // Add a settings updated message with the class of "updated"
+    add_settings_error('github_actions_messages', 'ga_message', $message, 'updated');
+}
+?>
+
+<div class="wrap">
+    <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+
+    <div class="ga-welcome-panel welcome-panel">
+        <a href="?page=github-actions-trigger&github-actions-trigger-welcome=0"
+            class="ga-welcome-panel-close welcome-panel-close" aria-label="Dismiss the welcome panel">Dismiss</a>
+        <div class="ga-welcome-panel-content">
+            <h3><?php _e( "Thanks for installing Github Actions!" ); ?></h3>
+
+            <div class="ga-welcome-panel-column">
+                <ul>
+                    <li class="welcome-icon welcome-edit-page">
+                        <?php
+                        $dashboard_url = esc_url(add_query_arg('page', 'github-actions-trigger', admin_url('admin.php')));
+                        printf(
+                            __('Add your <a href="%s">GitHub</a> credentials', 'github-actions'),
+                            $dashboard_url
+                        );
+                        ?>
+                    </li>
+
+                    <li>
+                        <?php
+                        $install_theme_url = esc_url(add_query_arg('page', 'github-actions-themes', admin_url('admin.php')));
+                        printf('<a href="%s" class="welcome-icon welcome-add-page">%s</a>', $install_theme_url, esc_html__('Install a Theme', 'github-actions'));
+                        ?>
+                    </li>
+
+                    <li>
+                        <?php
+                        $install_plugin_url = esc_url(add_query_arg('page', 'github-actions-plugins', admin_url('admin.php')));
+                        printf('<a href="%s" class="welcome-icon welcome-add-page">%s</a>', $install_plugin_url, esc_html__('Install a Plugin', 'github-actions'));
+                        ?>
+                    </li>
+
+                    <li>
+                        <?php 
+                        printf( '<a href="%s" class="welcome-icon welcome-view-site">%s</a>', $dashboard_url, esc_html__('View the dashboard', 'github-actions'));  
+                        ?>
+                    </li>
+
+
+                </ul>
+
+            </div>
+        </div>
+
+    </div>
+
+    <?php settings_errors('github_actions_messages'); ?>
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab-1">Manage Settings</a></li>
+        <li class=""><a href="#tab-2">Updates</a></li>
+        <li class=""><a href="#tab-3">About</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="tab-1" class="tab-pane active">
+            <form action="<?php echo admin_url(); ?>options.php" method="post">
+                <?php
+                // Output nonce, action, and option_page fields for a settings page
+                settings_fields('github_actions_group');
+
+                // Output sections and fields for a settings page
+                do_settings_sections('github-actions-trigger');
+
+                // Output Save Settings button
+                submit_button('Save Settings');
+                ?>
+            </form>
+        </div>
+        <div id="tab-2" class="tab-pane">
+            <h3>Updates</h3>
+        </div>
+        <div id="tab-3" class="tab-pane">
+            <h3>About</h3>
+            <p>About the plugin</p>
+        </div>
+    </div>
+
+
+
+    <div class="gat-footer">
+        <hr>
+        <div>
+            <p>Copyright &copy; <?php echo date('Y'); ?> <a class="" target="_blank"
+                    href="https://wilsondevops.com">Wilson</a></p>
+        </div>
+    </div>
+
+</div>

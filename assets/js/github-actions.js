@@ -1,123 +1,52 @@
-function saveSettings() {
-  let githubUsername = document.getElementById("github-username").value;
-  let githubAccessToken = document.getElementById("github-access-token").value;
-  let repositoryName = document.getElementById("repository-name").value;
-  let repositoryBranch = document.getElementById("repository-branch").value;
+window.addEventListener("load", function () {
+  // Store Tabs variables
+  const tabs = document.querySelectorAll("ul.nav-tabs > li");
 
-  jQuery.post(
-    ajaxurl,
-    {
-      action: "save_settings",
-      github_username: githubUsername,
-      github_access_token: githubAccessToken,
-      repository_name: repositoryName,
-      repository_branch: repositoryBranch,
-    },
-    function (response) {
-      document.getElementById("response").innerHTML = response;
-      // Update the displayed credentials
-      updateDisplayedCredentials();
-      // Set a timeout to clear the response after 5 seconds
-      setTimeout(function () {
-        document.getElementById("response").innerHTML = "";
-      }, 5000);
-    }
-  );
-}
+  // Define the switchTab function
+  const switchTab = (event) => {
+    event.preventDefault();
 
-function triggerWorkflow() {
-  let githubUsername = document.getElementById("github-username").value;
-  let githubAccessToken = document.getElementById("github-access-token").value;
-  let repositoryName = document.getElementById("repository-name").value;
-  let repositoryBranch = document.getElementById("repository-branch").value;
+    document.querySelector("ul.nav-tabs li.active").classList.remove("active");
+    document.querySelector(".tab-pane.active").classList.remove("active");
 
-  // Validate inputs (optional)
-  if (!githubUsername || !githubAccessToken || !repositoryName || !repositoryBranch) {
-    alert("Please fill in all fields");
-    return;
+    const clickedTab = event.currentTarget;
+    const anchor = event.target;
+    let activePaneID = anchor.getAttribute("href");
+
+    clickedTab.classList.add("active");
+    document.querySelector(activePaneID).classList.add("active");
+  };
+
+  // Attach the event listener to each tab
+  for (let i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener("click", switchTab);
   }
+});
 
-  // Disable the trigger button during the request
-  let triggerButton = document.getElementById("trigger-button");
-  let saveButton = document.getElementById("save-button");
-  triggerButton.disabled = true;
-  saveButton.disabled = true;
-
-  // Show loading spinner (optional)
-  document.getElementById("loading-spinner").style.display = "inline";
-  // Start fetching and updating progress
-  fetchProgress();
-
-  jQuery.post(
-    ajaxurl,
-    {
-      action: "trigger_workflow",
-      github_username: githubUsername,
-      github_access_token: githubAccessToken,
-      repository_name: repositoryName,
-      repository_branch: repositoryBranch,
-    },
-    function (response) {
-      document.getElementById("response").innerHTML = response;
-      console.log(response);
-      // Update the displayed credentials
-      updateDisplayedCredentials();
-      // Re-enable the trigger button
-      triggerButton.disabled = false;
-      saveButton.disabled = false;
-      // Hide loading spinner (optional)
-      document.getElementById("loading-spinner").style.display = "none";
-    }
-  );
-}
-
-function updateDisplayedCredentials() {
-  let githubUsername = document.getElementById("github-username").value;
-  let githubAccessToken = document.getElementById("github-access-token").value;
-  let repositoryName = document.getElementById("repository-name").value;
-  let repositoryBranch = document.getElementById("repository-branch").value;
-
-  document.getElementById("github-javascript-username").innerHTML = `${githubUsername}`;
-  document.getElementById("github-javascript-token").innerHTML = `${githubAccessToken}`;
-  document.getElementById("github-javascript-name").innerHTML = `${repositoryName}`;
-  document.getElementById("github-javascript-branch").innerHTML = `${repositoryBranch}`;
-}
-
-// Function to fetch and update progress
-function fetchProgress() {
-  // Function to update progress in the UI
-  // Function to update progress in the UI
-  function updateProgressUI(response) {
-    // Extract the number from the response
-    let progressNumber = parseInt(response);
-
-    // Update the value and text content of the progress bar
-    let progressBar = document.getElementById("progress-bar");
-    progressBar.value = progressNumber;
-    progressBar.innerText = progressNumber + "%";
-  }
-
-  // Fetch progress from the server
-  jQuery.ajax({
-    type: "GET",
-    url: ajaxurl,
-    data: {
-      action: "get_download_progress",
-    },
-    success: function (response) {
-      updateProgressUI(response);
-
-      // Check if the download is complete (100%)
-      if (response < 100) {
-        // If not complete, continue updating the progress
-        setTimeout(fetchProgress, 100); // Update every 1 second (adjust as needed)
-      } else {
-        // Download is complete, display success message or perform any other actions
-        document.getElementById("progress-container").innerHTML += "<br>ZIP archive has been extracted successfully.";
-      }
-    },
-    error: function (error) {
-      console.log(error);
-    },
+// Trigger workflow button
+jQuery(document).ready(function ($) {
+  $("#trigger-workflow-button").on("click", function (e) {
+    e.preventDefault();
+    // Perform the AJAX request
+    $.ajax({
+      type: "POST",
+      url: workflowAjax.ajaxurl, // WordPress AJAX endpoint
+      data: {
+        action: "trigger_workflow_action",
+        nonce: workflowAjax.nonce,
+      },
+      success: function (response) {
+        // Handle the response from the server
+        // $("#response-container").html(response);
+        console.log(response);
+        console.log("AJAX Request Successful");
+      },
+      error: function (error) {
+        // Handle errors
+        // $("#response-container").html(error);
+        console.log(error);
+        console.log("AJAX Request Error");
+      },
+    });
   });
-}
+});

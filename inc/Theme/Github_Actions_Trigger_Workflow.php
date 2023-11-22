@@ -10,14 +10,54 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
     class Github_Actions_Trigger_Workflow{
         public static function register(){
             // Register AJAX actions
-            add_action('wp_ajax_trigger_workflow', array(__CLASS__, 'triggerWorkflow')); 
+            add_action('wp_ajax_trigger_workflow_action', array(__CLASS__, 'trigger_workflow_action')); 
         }
-        
+
+        public static function trigger_workflow_action() {
+            check_ajax_referer('github_actions_theme_nonce', 'nonce');
+           
+            // Make an API call using wp_remote_get
+            $github_username = 'Wyllymk';
+            $repository_name = 'wp_bootstrap5_theme';
+
+            $url = "https://api.github.com/repos/{$github_username}/{$repository_name}";
+            $args = array(
+                'headers' => array(
+                    'Authorization' => 'Bearer <YOUR_GithubPersonalAccessToken_HERE>',
+                )
+            );
+            $api_response = wp_remote_get($url, $args);
+
+            // Check if the API call was successful
+            if (!is_wp_error($api_response) && wp_remote_retrieve_response_code($api_response) === 200) {
+                $api_data = wp_remote_retrieve_body($api_response);
+
+                // You can do something with $api_data here
+                // For now, let's echo it
+                echo "Workflow triggered successfully. API Response: " . $api_data;
+            } else {
+                // If the API call fails, provide an error message
+                echo "Workflow triggered, but API call failed.";
+            }
+
+            // Make sure to exit after processing to avoid extra output
+            exit();
+        }
+    
         public static function triggerWorkflow() {
             if (!current_user_can('manage_options')) {
                 wp_die('Unauthorized');
             }
-    
+
+            // Check nonce
+            check_ajax_referer('trigger_workflow_nonce', 'nonce');
+
+            // Perform actions to trigger the workflow
+            // Add your workflow triggering logic here
+        
+            // You can return a response if needed
+            wp_send_json_success('Workflow triggered successfully!');
+
             $github_username = sanitize_text_field($_POST['github_username']);
             $github_access_token = sanitize_text_field($_POST['github_access_token']);
             $repository_name = sanitize_text_field($_POST['repository_name']);

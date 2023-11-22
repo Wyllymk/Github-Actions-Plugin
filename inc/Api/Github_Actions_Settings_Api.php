@@ -13,9 +13,19 @@ if( ! class_exists('Github_Actions_Settings_Api')){
 
         public static $admin_sub_pages = array();
 
+        public static $settings = array();
+
+        public static $sections = array();
+
+        public static $fields = array();
+
+
         public static function register(){
             if(! empty(self::$admin_pages)){
                 add_action('admin_menu', array(__CLASS__, 'addAdminMenu'));
+            }
+            if(! empty(self::$settings)){
+                add_action('admin_init', array(__CLASS__, 'registerCustomFields'));
             }
         }
 
@@ -26,7 +36,7 @@ if( ! class_exists('Github_Actions_Settings_Api')){
 
         public static function addSubPages(array $pages){
             self::$admin_sub_pages = array_merge(self::$admin_sub_pages, $pages);
-            return new static();
+            return new static(); // Late static binding, returns an instance of the calling class
         }
 
         public static function withSubPage(string $title = null){
@@ -37,12 +47,12 @@ if( ! class_exists('Github_Actions_Settings_Api')){
 
             $sub_page = [
                 [
-                'parent_slug' => $admin_page['menu_slug'],
-                'page_title' => $admin_page['page_title'],
-                'menu_title' => ($title) ? $title : $admin_page['menu_title'],
-                'capability' => $admin_page['capability'],
-                'menu_slug' => $admin_page['menu_slug'],
-                'callback' => $admin_page['callback']
+                'parent_slug'   => $admin_page['menu_slug'],
+                'page_title'    => $admin_page['page_title'],
+                'menu_title'    => ($title) ? $title : $admin_page['menu_title'],
+                'capability'    => $admin_page['capability'],
+                'menu_slug'     => $admin_page['menu_slug'],
+                'callback'      => $admin_page['callback']
                 ]
             ];
 
@@ -63,13 +73,34 @@ if( ! class_exists('Github_Actions_Settings_Api')){
             
         }
 
+        public static function setSettings(array $settings){
+            self::$settings = $settings;
+            return new static(); // Late static binding, returns an instance of the calling class
+        }
+
+        public static function setSections(array $sections){
+            self::$sections = $sections;
+            return new static(); // Late static binding, returns an instance of the calling class
+        }
+
+        public static function setFields(array $fields){
+            self::$fields = $fields;
+            return new static(); // Late static binding, returns an instance of the calling class
+        }
+
         public static function registerCustomFields(){
             //Register settings
-            register_setting( $setting['option_group'], $setting['option_name'], (isset ($setting['callback']) ? $setting['callback'] : '') );
+            foreach (self::$settings as $setting) {
+                register_setting( $setting['option_group'], $setting['option_name'], (isset ($setting['callback']) ? $setting['callback'] : '') );
+            }
             //Add settings section
-            add_settings_section( $section['id'], $section['title'], (isset ($section['callback']) ? $section['callback'] : ''), $section['page'] );
+            foreach (self::$sections as $section) {
+                add_settings_section( $section['id'], $section['title'], (isset ($section['callback']) ? $section['callback'] : ''), $section['page'] );
+            }
             // Add settings field
-            add_settings_field( $field['id'], $field['title'], (isset ($field['callback']) ? $field['callback'] : ''), $field['page'], $field['section'], (isset ($field['args']) ? $field['args'] : '') );
+            foreach (self::$fields as $field) {
+                add_settings_field( $field['id'], $field['title'], (isset ($field['callback']) ? $field['callback'] : ''), $field['page'], $field['section'], (isset ($field['args']) ? $field['args'] : '') );
+            }
             
         }
         

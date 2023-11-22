@@ -16,7 +16,8 @@ if( ! class_exists('Github_Actions_Init')){
             return [
                 Pages\Github_Actions_Admin::class,
                 Base\Github_Actions_Enqueue::class,
-                Base\Github_Actions_Settings::class
+                Base\Github_Actions_Settings::class,
+                Theme\Github_Actions_Trigger_Workflow::class,
             ];
         }
         /**
