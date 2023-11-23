@@ -43,7 +43,34 @@ if ($is_update) {
             <h3>Trigger Workflow</h3>
             <div>
                 <h4>Trigger workflow for the theme below</h4>
-                <div id="response-container"></div>
+                <?php
+                    // Retrieve theme data from options
+                    $options = get_option('themes_github_options');
+
+                    $repository_owner = isset($options['ga_username']) ? esc_attr($options['ga_username']) : '';
+                    $github_repository_name = isset($options['ga_theme_repository_name']) ? esc_attr($options['ga_theme_repository_name']) : '';
+                    $repository_reference = isset($options['ga_theme_repository_branch']) ? esc_attr($options['ga_theme_repository_branch']) : 'main';
+            
+                ?>
+                <p><strong>Repository Owner:</strong> <?php echo $repository_owner; ?></p>
+                <p><strong>Repository Name:</strong> <?php echo $github_repository_name; ?></p>
+                <p><strong>Repository Branch:</strong> <?php echo $repository_reference; ?></p>
+                <p id="response-success"></p>
+                <p id="response-error"></p>
+                <div class="lds-spinner" id="loading-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
                 <button id="trigger-workflow-button" class="button button-primary">Trigger Workflow</button>
             </div>
         </div>

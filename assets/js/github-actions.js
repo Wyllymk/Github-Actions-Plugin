@@ -27,6 +27,13 @@ window.addEventListener("load", function () {
 jQuery(document).ready(function ($) {
   $("#trigger-workflow-button").on("click", function (e) {
     e.preventDefault();
+
+    // Disable the trigger button
+    $(this).prop("disabled", true);
+
+    // Show the loading spinner
+    $("#loading-spinner").css("display", "block");
+
     // Perform the AJAX request
     $.ajax({
       type: "POST",
@@ -37,15 +44,18 @@ jQuery(document).ready(function ($) {
       },
       success: function (response) {
         // Handle the response from the server
-        // $("#response-container").html(response);
-        console.log(response);
-        console.log("AJAX Request Successful");
+        $("#response-success").html(response);
       },
       error: function (error) {
         // Handle errors
-        // $("#response-container").html(error);
-        console.log(error);
-        console.log("AJAX Request Error");
+        $("#response-error").html(error);
+      },
+      complete: function () {
+        // Enable the trigger button after the request is complete (success or error)
+        $("#trigger-workflow-button").prop("disabled", false);
+
+        // Hide the loading spinner
+        $("#loading-spinner").css("display", "none");
       },
     });
   });

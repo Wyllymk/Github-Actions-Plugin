@@ -55,7 +55,11 @@ if( ! class_exists('Github_Actions_Callbacks')){
         public static function githubRepositoryBranch(){
             $options = get_option('themes_github_options');
             $ga_theme_repository_branch = isset($options['ga_theme_repository_branch']) ? esc_attr($options['ga_theme_repository_branch']) : '';
+            $default_branch_text = 'If left empty, the default branch will be "main"';
+
             echo '<input type="text" class="regular-text" name="themes_github_options[ga_theme_repository_branch]" value="'. $ga_theme_repository_branch . '" placeholder="Enter Repository Branch">';
+            echo '<p class="description">' . esc_html($default_branch_text) . '</p>';
+
         }
         
     }
