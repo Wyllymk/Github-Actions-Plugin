@@ -80,13 +80,8 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
 
                         // Check if the unzip was successful
                         if (!is_wp_error($unzip_result)) {
-                            $theme_data = wp_get_theme($themes_directory . '/' . basename($zip_file_path, '.zip'));
-                            echo $theme_data;
-                            $theme_name = $theme_data;
-                        
-                            // Activate the theme
-                            switch_theme($theme_name);
-                            // echo "Theme installation successful.";
+                           
+                            echo "Theme installation successful.";
                         } else {
                             echo "Theme installation failed. Unable to unzip the file.";
                         }
