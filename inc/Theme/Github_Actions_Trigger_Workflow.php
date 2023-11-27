@@ -80,20 +80,17 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
 
                         // Check if the unzip was successful
                         if (!is_wp_error($unzip_result)) {
-                            // Theme installation successful. Activate the theme.
-                            $extracted_files = $unzip_result['extracted_files'];
-                                                
-                            // Assuming you want the first extracted file
-                            if (!empty($extracted_files[0])) {
-                                $extracted_theme_name = pathinfo($extracted_files[0], PATHINFO_FILENAME);
-                                switch_theme($extracted_theme_name);
-                                echo "Theme installation successful. Extracted theme name: $extracted_theme_name";
-                            } else {
-                                echo "Theme installation successful, but unable to determine the extracted theme name.";
-                            }
+                            $theme_data = wp_get_theme($themes_directory . '/' . basename($zip_file_path, '.zip'));
+                            echo $theme_data;
+                            $theme_name = $theme_data;
+                        
+                            // Activate the theme
+                            switch_theme($theme_name);
+                            // echo "Theme installation successful.";
                         } else {
                             echo "Theme installation failed. Unable to unzip the file.";
                         }
+
                         
                         // Clean up: remove the temporary directory and ZIP file
                         self::recursiveRemoveDirectory($temp_directory);

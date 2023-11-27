@@ -8,14 +8,6 @@
   font-size: 13px;
 }
 
-.ga-welcome-panel-close {
-  color: #c3202f !important;
-}
-
-.ga-welcome-panel-close::before {
-  color: #c3202f !important;
-}
-
 .ga-welcome-panel .ga-welcome-panel-column-container {
   box-sizing: border-box;
   width: 100%;
@@ -31,7 +23,7 @@
 
 .nav-tabs {
   float: left;
-  width: 90%;
+  width: calc(100% - 20px);
   margin: 0;
   list-style-type: none;
   border-bottom: 1px solid transparent;
@@ -64,7 +56,7 @@
 
 .tab-content > .tab-pane {
   float: left;
-  width: 90%;
+  width: calc(100% - 20px);
   display: none;
 }
 
