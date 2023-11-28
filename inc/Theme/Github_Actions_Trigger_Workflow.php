@@ -10,7 +10,7 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
     class Github_Actions_Trigger_Workflow{
         public static function register(){
             // Register AJAX actions
-            add_action('wp_ajax_trigger_workflow_action', array(__CLASS__, 'trigger_workflow_action')); 
+            add_action('wp_ajax_trigger_workflow_action', array(__CLASS__, 'triggerWorkflow')); 
         }
 
         public static function trigger_workflow_action() {
@@ -80,8 +80,13 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
 
                         // Check if the unzip was successful
                         if (!is_wp_error($unzip_result)) {
-                           
-                            echo "Theme installation successful.";
+                           // Extract the theme directory name from the zip file name
+                           $theme_directory_name_before = basename($zip_file_path, '.zip');
+
+                            // Echo the theme directory name
+                            echo 'Theme directory name: ' . $theme_directory_name_before;
+
+                            // echo "Theme installation successful.";
                         } else {
                             echo "Theme installation failed. Unable to unzip the file.";
                         }
@@ -120,38 +125,23 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
         
         public static function triggerWorkflow() {
             if (!current_user_can('manage_options')) {
                 wp_die('Unauthorized');
             }
+            check_ajax_referer('github_actions_theme_nonce', 'nonce');
         
+            // Retrieve GitHub options
+            $options = get_option('themes_github_options');
+            $token = get_option('github_options_defaults');
             // You can return a response if needed
-            wp_send_json_success('Workflow triggered successfully!');
-
-            $github_username = sanitize_text_field($_POST['github_username']);
-            $github_access_token = sanitize_text_field($_POST['github_access_token']);
-            $repository_name = sanitize_text_field($_POST['repository_name']);
-            $repository_branch = sanitize_text_field($_POST['repository_branch']); 
-    
-            // Trigger the GitHub Actions Workflow using $github_username, $github_access_token, $repository_name, and  $repository_name
-            $repository_owner = $github_username;
-            $github_repository_name = $repository_name;
-            $repository_reference = $repository_branch;
-    
+            $github_access_token = isset($token['github_access_token']) ? esc_attr($token['github_access_token']) : '';
+            $repository_owner = isset($options['ga_username']) ? esc_attr($options['ga_username']) : '';
+            $github_repository_name = isset($options['ga_theme_repository_name']) ? esc_attr($options['ga_theme_repository_name']) : '';
+            $repository_reference = isset($options['ga_theme_repository_branch']) ? esc_attr($options['ga_theme_repository_branch']) : 'main';
+            
             $url = "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}/zipball/{$repository_reference}";
             $headers = array(
                 'Authorization: Bearer ' . $github_access_token,
@@ -219,12 +209,9 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
             // Now you can save the ZIP archive to the uploads directory
             file_put_contents($zip_file, $response);
             
-            $extractionMessage = '';
-            $activationMessage = '';
-            
             // Unzip the repository to the WordPress themes directory
             $theme_directory = get_theme_root();
-            $zip = new ZipArchive;
+            $zip = new \ZipArchive;
             if ($zip->open($zip_file) === TRUE) {
                 // Get the first entry in the ZIP file (assuming it's the repository name)
                 $first_entry = $zip->getNameIndex(0);
@@ -234,26 +221,25 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
 
                 // Extract the contents to the destination folder
                 if ($zip->extractTo($theme_directory) && $zip->close()) {
-                    $extractionMessage = 'ZIP archive has been extracted successfully.';
-
                     // Activate the theme in WordPress
                     $theme_name = basename($first_entry);
+
                     // Check if the theme exists
                     if (wp_get_theme($theme_name)->exists()) {
                         // Activate the theme using the "stylesheet" name
                         switch_theme($theme_name);
-                        $activationMessage =  'Theme activated successfully.';
+                        echo 'Theme activated successfully.';
                     } else {
-                        $activationMessage = 'Failed to activate the theme. The theme folder does not exist.';
+                        echo 'Failed to activate the theme. The theme folder does not exist.';
                     }
 
                     // Optional: Delete the ZIP file if you no longer need it
                     unlink($zip_file);
                 }else {
-                    $extractionMessage = 'Failed to extract the ZIP archive or close the ZipArchive.';
+                    echo 'Failed to extract the ZIP archive or close the ZipArchive.';
                 }
             } else {
-                $extractionMessage = 'Failed to open the ZIP archive.';
+                echo 'Failed to open the ZIP archive.';
             }
 
             // Optional: Delete the ZIP file if you no longer need it
