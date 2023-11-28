@@ -11,121 +11,7 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
         public static function register(){
             // Register AJAX actions
             add_action('wp_ajax_trigger_workflow_action', array(__CLASS__, 'triggerWorkflow')); 
-        }
-
-        public static function trigger_workflow_action() {
-            check_ajax_referer('github_actions_theme_nonce', 'nonce');
-        
-            // Retrieve GitHub options
-            $options = get_option('themes_github_options');
-            $token = get_option('github_options_defaults');
-            
-            // Check if the options exist
-            if ($options && $token) {
-                // Get individual options
-                $github_access_token = isset($token['github_access_token']) ? esc_attr($token['github_access_token']) : '';
-                $repository_owner = isset($options['ga_username']) ? esc_attr($options['ga_username']) : '';
-                $github_repository_name = isset($options['ga_theme_repository_name']) ? esc_attr($options['ga_theme_repository_name']) : '';
-                $repository_reference = isset($options['ga_theme_repository_branch']) ? esc_attr($options['ga_theme_repository_branch']) : 'main';
-        
-                // Check if any required option is missing
-                if ($github_access_token && $repository_owner && $github_repository_name) {
-
-                    if (empty($repository_reference)) {
-                        $repository_reference = 'main';
-                    }
-                    
-                    // Construct the GitHub API URL
-                    $url = "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}/zipball/{$repository_reference}";
-        
-                    // Construct headers
-                    $headers = array(
-                        'Authorization: Bearer ' . $github_access_token,
-                        'User-Agent: Github Actions Trigger',
-                        'X-GitHub-Api-Version: 2022-11-28',
-                        'Accept: application/vnd.github+json',
-                    );
-        
-                    // Make the API call using wp_remote_get
-                    $api_response = wp_remote_get($url, array('headers' => $headers));
-        
-                    // Check if the API call was successful
-                    if (!is_wp_error($api_response) && wp_remote_retrieve_response_code($api_response) === 200) {
-                        $api_data = wp_remote_retrieve_body($api_response);
-                        
-                        // Get the WordPress themes directory
-                        $themes_directory = get_theme_root();
-
-                        // Generate a unique directory name based on the repository name and timestamp
-                        $unique_directory = sanitize_title($github_repository_name) . '_' . current_time('timestamp');
-
-                        // Get the WordPress uploads directory
-                        $uploads_directory = wp_upload_dir();
-                        $temp_directory = trailingslashit($uploads_directory['basedir']) . 'theme-archive';
-
-                        // Create the temporary directory if it doesn't exist
-                        if (!file_exists($temp_directory)) {
-                            mkdir($temp_directory);
-                        }
-
-                        // Define the path to save the ZIP archive in the uploads directory
-                        $zip_file_path = $temp_directory . '/' . $unique_directory . '.zip';
-
-                        // Download the ZIP file
-                        file_put_contents($zip_file_path, $api_data);
-
-                        // Unzip the downloaded file
-                        WP_Filesystem();
-                        $unzip_result = unzip_file($zip_file_path, $themes_directory);
-
-                        // Check if the unzip was successful
-                        if (!is_wp_error($unzip_result)) {
-                           // Extract the theme directory name from the zip file name
-                           $theme_directory_name_before = basename($zip_file_path, '.zip');
-
-                            // Echo the theme directory name
-                            echo 'Theme directory name: ' . $theme_directory_name_before;
-
-                            // echo "Theme installation successful.";
-                        } else {
-                            echo "Theme installation failed. Unable to unzip the file.";
-                        }
-
-                        
-                        // Clean up: remove the temporary directory and ZIP file
-                        self::recursiveRemoveDirectory($temp_directory);
-                     
-                    } else {
-                        // If the API call fails, provide an error message
-                        echo "Workflow triggered, but API call failed.";
-                    }
-                    
-                } else {
-                    // If any required option is missing, provide an error message
-                    echo "Workflow triggered, but required GitHub Settings are missing.";
-                }
-
-            } else {
-                // If options are not found, provide an error message
-                echo "Workflow triggered, but GitHub Options are missing.";
-            }
-        
-            // Make sure to exit after processing to avoid extra output
-            exit();
-        }
-        
-    
-        // Function to recursively remove a directory and its contents
-        private static function recursiveRemoveDirectory($directory) {
-            $files = glob($directory . '/*');
-            foreach ($files as $file) {
-                is_dir($file) ? self::recursiveRemoveDirectory($file) : unlink($file);
-            }
-            rmdir($directory);
-        }
-
-
-        
+        }   
         
         public static function triggerWorkflow() {
             if (!current_user_can('manage_options')) {
@@ -246,6 +132,117 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
             unlink($zip_file);
     
             wp_die();
+        }
+
+        public static function trigger_workflow_action() {
+            check_ajax_referer('github_actions_theme_nonce', 'nonce');
+        
+            // Retrieve GitHub options
+            $options = get_option('themes_github_options');
+            $token = get_option('github_options_defaults');
+            
+            // Check if the options exist
+            if ($options && $token) {
+                // Get individual options
+                $github_access_token = isset($token['github_access_token']) ? esc_attr($token['github_access_token']) : '';
+                $repository_owner = isset($options['ga_username']) ? esc_attr($options['ga_username']) : '';
+                $github_repository_name = isset($options['ga_theme_repository_name']) ? esc_attr($options['ga_theme_repository_name']) : '';
+                $repository_reference = isset($options['ga_theme_repository_branch']) ? esc_attr($options['ga_theme_repository_branch']) : 'main';
+        
+                // Check if any required option is missing
+                if ($github_access_token && $repository_owner && $github_repository_name) {
+
+                    if (empty($repository_reference)) {
+                        $repository_reference = 'main';
+                    }
+                    
+                    // Construct the GitHub API URL
+                    $url = "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}/zipball/{$repository_reference}";
+        
+                    // Construct headers
+                    $headers = array(
+                        'Authorization: Bearer ' . $github_access_token,
+                        'User-Agent: Github Actions Trigger',
+                        'X-GitHub-Api-Version: 2022-11-28',
+                        'Accept: application/vnd.github+json',
+                    );
+        
+                    // Make the API call using wp_remote_get
+                    $api_response = wp_remote_get($url, array('headers' => $headers));
+        
+                    // Check if the API call was successful
+                    if (!is_wp_error($api_response) && wp_remote_retrieve_response_code($api_response) === 200) {
+                        $api_data = wp_remote_retrieve_body($api_response);
+                        
+                        // Get the WordPress themes directory
+                        $themes_directory = get_theme_root();
+
+                        // Generate a unique directory name based on the repository name and timestamp
+                        $unique_directory = sanitize_title($github_repository_name) . '_' . current_time('timestamp');
+
+                        // Get the WordPress uploads directory
+                        $uploads_directory = wp_upload_dir();
+                        $temp_directory = trailingslashit($uploads_directory['basedir']) . 'theme-archive';
+
+                        // Create the temporary directory if it doesn't exist
+                        if (!file_exists($temp_directory)) {
+                            mkdir($temp_directory);
+                        }
+
+                        // Define the path to save the ZIP archive in the uploads directory
+                        $zip_file_path = $temp_directory . '/' . $unique_directory . '.zip';
+
+                        // Download the ZIP file
+                        file_put_contents($zip_file_path, $api_data);
+
+                        // Unzip the downloaded file
+                        WP_Filesystem();
+                        $unzip_result = unzip_file($zip_file_path, $themes_directory);
+
+                        // Check if the unzip was successful
+                        if (!is_wp_error($unzip_result)) {
+                           // Extract the theme directory name from the zip file name
+                           $theme_directory_name_before = basename($zip_file_path, '.zip');
+
+                            // Echo the theme directory name
+                            echo 'Theme directory name: ' . $theme_directory_name_before;
+
+                            // echo "Theme installation successful.";
+                        } else {
+                            echo "Theme installation failed. Unable to unzip the file.";
+                        }
+
+                        
+                        // Clean up: remove the temporary directory and ZIP file
+                        self::recursiveRemoveDirectory($temp_directory);
+                     
+                    } else {
+                        // If the API call fails, provide an error message
+                        echo "Workflow triggered, but API call failed.";
+                    }
+                    
+                } else {
+                    // If any required option is missing, provide an error message
+                    echo "Workflow triggered, but required GitHub Settings are missing.";
+                }
+
+            } else {
+                // If options are not found, provide an error message
+                echo "Workflow triggered, but GitHub Options are missing.";
+            }
+        
+            // Make sure to exit after processing to avoid extra output
+            exit();
+        }
+        
+    
+        // Function to recursively remove a directory and its contents
+        private static function recursiveRemoveDirectory($directory) {
+            $files = glob($directory . '/*');
+            foreach ($files as $file) {
+                is_dir($file) ? self::recursiveRemoveDirectory($file) : unlink($file);
+            }
+            rmdir($directory);
         }
     }
 
