@@ -21,6 +21,20 @@
   background: #fff;
 }
 
+.ga-welcome-panel-close {
+  color: grey !important;
+}
+.ga-welcome-panel-close:hover {
+  color: #c3202f !important;
+}
+
+.ga-welcome-panel-close::before {
+  color: grey !important;
+}
+.ga-welcome-panel-close:hover::before {
+  color: #c3202f !important;
+}
+
 .nav-tabs {
   float: left;
   width: calc(100% - 20px);

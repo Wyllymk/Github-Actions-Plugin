@@ -18,8 +18,8 @@ if ($is_update) {
 
     <?php if ( ! get_option('hide-ga-welcome', false)) { ?>
     <div class="ga-welcome-panel welcome-panel">
-        <a href="?page=github-actions-trigger&github-actions-trigger-welcome=0" class="welcome-panel-close"
-            aria-label="Dismiss the welcome panel">Dismiss</a>
+        <a href="<?php echo admin_url('admin.php?page=github-actions-trigger&github-actions-trigger-welcome=0')?>"
+            class="ga-welcome-panel-close welcome-panel-close" aria-label="Dismiss the welcome panel">Dismiss</a>
         <div class="ga-welcome-panel-content">
             <h3><?php _e( "Thanks for installing Github Actions!" ); ?></h3>
 
