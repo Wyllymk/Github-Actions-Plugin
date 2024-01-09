@@ -66,6 +66,9 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
                     // ...
         
                     echo 'Theme installed and activated successfully.';
+
+                    // Set up GitHub webhook
+                    self::setupWebhook($github_access_token, $repository_owner, $github_repository_name, $repository_reference);
                 } else {
                     // Handle git clone error
                     echo 'Failed to clone the repository. Check your GitHub access token and repository information.';
@@ -78,7 +81,92 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
         
             wp_die();
         }
+
+        private static function setupWebhook($github_access_token, $repository_owner, $github_repository_name, $repository_reference) {
+            // Webhook endpoint path
+            $webhook_path = '/wp-json/github-actions/v1/webhook';
         
+            // Construct the full webhook URL dynamically using home_url
+            $webhook_url = home_url($webhook_path);
+        
+            // GitHub API URL for listing repository hooks
+            $hooks_url = "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}/hooks";
+            $headers = array(
+                'Authorization' => 'token ' . $github_access_token,
+                'User-Agent'    => 'GitHub Actions Trigger',
+            );
+        
+            // Fetch existing hooks
+            $existing_hooks = wp_remote_get($hooks_url, array('headers' => $headers));
+        
+            if (is_array($existing_hooks) && !is_wp_error($existing_hooks)) {
+                $existing_hooks = json_decode($existing_hooks['body'], true);
+        
+                // Check if a webhook for our URL already exists
+                $webhook_id = self::findWebhookId($existing_hooks, $webhook_url);
+        
+                if ($webhook_id) {
+                    // If found, update the existing webhook
+                    $url = "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}/hooks/{$webhook_id}";
+                    $method = 'PATCH'; // Use PATCH to update existing hook
+        
+                    $data = json_encode(array(
+                        'config' => array(
+                            'url'          => $webhook_url,
+                            'content_type' => 'form',
+                            'insecure_ssl' => '0',
+                            'secret'       => 'GITHUB_ACTIONS_SECRET',
+                            'branches'     => [$repository_reference]
+                        )
+                    ));
+        
+                } else {
+                    // If not found, create a new webhook
+                    $url = "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}/hooks";
+                    $method = 'POST'; // Use POST to create a new hook
+        
+                    $data = json_encode(array(
+                        'name'   => 'web',
+                        'active' => true,
+                        'events' => ['push'],
+                        'config' => array(
+                            'url'          => $webhook_url,
+                            'content_type' => 'form',
+                            'insecure_ssl' => '0',
+                            'secret'       => 'GITHUB_ACTIONS_SECRET',
+                            'branches'     => [$repository_reference]
+                        )
+                    ));
+                }
+        
+                // Send request to GitHub API
+                $response = wp_remote_request($url, array(
+                    'method'    => $method,
+                    'headers'   => $headers,
+                    'body'      => $data,
+                    'sslverify' => true,
+                ));
+        
+                if (is_array($response) && isset($response['response']['code']) && ($response['response']['code'] === 200 || $response['response']['code'] === 201)) {
+                    echo 'Webhook set up successfully.';
+                } else {
+                    echo 'Failed to set up or update webhook.';
+                }
+            } else {
+                echo 'Failed to fetch existing hooks.';
+            }
+        }
+        
+        // Helper function to find webhook ID by URL
+        private static function findWebhookId($hooks, $target_url) {
+            foreach ($hooks as $hook) {
+                if (isset($hook['config']['url']) && $hook['config']['url'] === $target_url) {
+                    return $hook['id'];
+                }
+            }
+            return false;
+        }
+                   
 
     }
 

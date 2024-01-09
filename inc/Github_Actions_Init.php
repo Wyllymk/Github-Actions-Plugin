@@ -18,6 +18,7 @@ if( ! class_exists('Github_Actions_Init')){
                 Base\Github_Actions_Enqueue::class,
                 Base\Github_Actions_Settings::class,
                 Theme\Github_Actions_Trigger_Workflow::class,
+                Theme\Github_Actions_Webhook::class,
             ];
         }
         /**
