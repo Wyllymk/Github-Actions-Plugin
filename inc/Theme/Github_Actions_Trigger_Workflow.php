@@ -49,8 +49,7 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
         
                 // Construct the Git clone command
                 $git_clone_command = "git clone {$clone_url} --branch {$repository_reference} --single-branch";
-        
-                // Execute the Git clone command
+
                 exec($git_clone_command, $output, $return_code);
         
                 if ($return_code === 0) {
@@ -70,6 +69,7 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
                 } else {
                     // Handle git clone error
                     echo 'Failed to clone the repository. Check your GitHub access token and repository information.';
+
                 }
             } else {
                 // Handle GitHub API request error
