@@ -34,14 +34,13 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
             $is_private = isset($options['ga_private_theme']) && $options['ga_private_theme'] === '1';
 
             // GitHub API URL for repository information
-            $api_url = $is_private
-                ? "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}?access_token={$github_access_token}"
-                : "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}";
-
+            $api_url = 'https://api.github.com/repos/' . urlencode($repository_owner) . '/' . urlencode($github_repository_name);
+            
             $headers = array(
-                'Authorization: token ' . $github_access_token,
+                'Authorization: Bearer ' . $github_access_token,
                 'User-Agent: Github Actions Trigger',
                 'Accept: application/vnd.github.v3+json',
+                'X-GitHub-Api-Version: 2022-11-28'
             );
         
             // Fetch repository information
@@ -56,7 +55,9 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
                 // Construct the Git clone command
                 $git_clone_command = "git clone {$clone_url} --branch {$repository_reference} --single-branch";
 
+                // Debugging: Capture STDERR in $output and display it
                 exec($git_clone_command, $output, $return_code);
+
         
                 if ($return_code === 0) {
                     // Move the downloaded theme directory to the WordPress themes directory
@@ -78,6 +79,9 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
                 } else {
                     // Handle git clone error
                     echo 'Failed to clone the repository. Check your GitHub access token and repository information.';
+                    // Log git clone command output and return code for debugging
+                    echo('Git Clone Command Output: ' . print_r($output, true));
+                    echo('Git Clone Return Code: ' . $return_code);
 
                 }
             } else {

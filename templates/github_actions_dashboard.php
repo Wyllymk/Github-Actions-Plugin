@@ -83,11 +83,29 @@ if ($is_update) {
         </div>
         <div id="tab-2" class="tab-pane">
             <h3>Updates</h3>
+            <p>Upcoming Updates</p>
         </div>
         <div id="tab-3" class="tab-pane">
             <h3>About</h3>
-            <p>About the plugin</p>
+            <p><b>About the plugin</b></p>
+
+            <p>
+                The GitHub token is required for accessing private repositories. If your GitHub repository is public,
+                you do not need to provide a token. However, for private repositories, a GitHub access token with the
+                'repo'
+                scope is necessary for authentication.
+            </p>
+
+            <p>
+                To set up webhooks (for automatic updating of your theme/plugin) and clone private repositories, ensure
+                your GitHub token has the required
+                permissions.
+                You can manage these permissions in your GitHub repository settings.
+                <a href="https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps#available-scopes"
+                    target="_blank" rel="noopener noreferrer">Learn more about GitHub scopes and permissions</a>.
+            </p>
         </div>
+
     </div>
 
 
