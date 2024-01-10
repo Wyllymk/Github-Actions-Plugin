@@ -169,6 +169,18 @@ if( ! class_exists('Github_Actions_Admin')){
                             'class'     => 'example-text',
                         )
                     ),
+                    array(
+                        'id'            => 'ga_if_private_theme',
+                        'title'         => 'Private Repository',
+                        'callback'      => [self::$callbacks, 'githubRepositoryBranch'],
+                        'page'          => 'github-actions-theme',
+                        'section'       => 'github_actions_index',
+                        'args'          => array(
+                            'label_for' => 'ga_if_private_theme',
+                            'type'      => 'text',
+                            'class'     => 'example-text',
+                        )
+                    ),
                     
             );
             self::$admin_settings->setFields($args);
