@@ -61,6 +61,17 @@ if( ! class_exists('Github_Actions_Callbacks')){
             echo '<p class="description">' . esc_html($default_branch_text) . '</p>';
 
         }
+        public static function githubPrivateRepository() {
+            $options = get_option('themes_github_options');
+            $ga_private_theme = isset($options['ga_private_theme']) ? esc_attr($options['ga_private_theme']) : '0';
+            $default_repo_text = 'Click if the repository is set to private';
+        
+            echo '<input type="checkbox" class="regular-text" name="themes_github_options[ga_private_theme]" value="1" ' . checked(1, $ga_private_theme, false) . '>';
+            echo '<p class="description">' . esc_html($default_repo_text) . '</p>';
+        }
+        
+        
+        
         
     }
     

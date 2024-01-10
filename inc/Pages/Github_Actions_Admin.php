@@ -170,13 +170,13 @@ if( ! class_exists('Github_Actions_Admin')){
                         )
                     ),
                     array(
-                        'id'            => 'ga_if_private_theme',
+                        'id'            => 'ga_private_theme',
                         'title'         => 'Private Repository',
-                        'callback'      => [self::$callbacks, 'githubRepositoryBranch'],
+                        'callback'      => [self::$callbacks, 'githubPrivateRepository'],
                         'page'          => 'github-actions-theme',
                         'section'       => 'github_actions_index',
                         'args'          => array(
-                            'label_for' => 'ga_if_private_theme',
+                            'label_for' => 'ga_private_theme',
                             'type'      => 'text',
                             'class'     => 'example-text',
                         )

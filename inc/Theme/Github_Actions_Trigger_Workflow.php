@@ -29,9 +29,15 @@ if( ! class_exists('Github_Actions_Trigger_Workflow')){
             $repository_owner = isset($options['ga_username']) ? esc_attr($options['ga_username']) : '';
             $github_repository_name = isset($options['ga_theme_repository_name']) ? esc_attr($options['ga_theme_repository_name']) : '';
             $repository_reference = isset($options['ga_theme_repository_branch']) ? esc_attr($options['ga_theme_repository_branch']) : 'main';
-        
+
+             // Check if the repository is private
+            $is_private = isset($options['ga_private_theme']) && $options['ga_private_theme'] === '1';
+
             // GitHub API URL for repository information
-            $api_url = "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}";
+            $api_url = $is_private
+                ? "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}?access_token={$github_access_token}"
+                : "https://api.github.com/repos/{$repository_owner}/{$github_repository_name}";
+
             $headers = array(
                 'Authorization: token ' . $github_access_token,
                 'User-Agent: Github Actions Trigger',
