@@ -25,7 +25,7 @@ if( ! class_exists('Github_Actions_Update')){
                 }
         
                 $this->plugin_slug   = dirname ( plugin_basename( __DIR__ ) );
-                $this->version       = '1.1.2';
+                $this->version       = '0.1.0';
                 $this->cache_key     = 'wpfreighter_updater';
                 $this->cache_allowed = false;
         
@@ -41,7 +41,7 @@ if( ! class_exists('Github_Actions_Update')){
         
                 if( false === $remote || ! $this->cache_allowed ) {
         
-                    $remote = wp_remote_get( 'https://wpfreighter.com/plugin-wpfreighter.json', [
+                    $remote = wp_remote_get( 'https://raw.githubusercontent.com/Wyllymk/Github-Actions-Plugin/main/info.json', [
                             'timeout' => 10,
                             'headers' => [
                                 'Accept' => 'application/json'
@@ -63,7 +63,7 @@ if( ! class_exists('Github_Actions_Update')){
         
             }
         
-            function info( $response, $action, $args ) {
+            public function info( $response, $action, $args ) {
         
                 // do nothing if you're not getting plugin information right now
                 if ( 'plugin_information' !== $action ) {
