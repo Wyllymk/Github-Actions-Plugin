@@ -3,7 +3,7 @@
   "slug": "github-actions",
   "author": "<a href='https://wilsondevops.com'>Wilson Mbuthia</a>",
   "author_profile": "https://profiles.wordpress.org/wylly",
-  "version": "0.1.1",
+  "version": "0.0.1",
   "download_url": "https://github.com/Wyllymk/Github-Actions-Plugin/releases/download/v0.1.0/Github-Actions-Plugin.zip",
   "requires": "6.0",
   "tested": "6.2",
