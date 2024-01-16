@@ -24,6 +24,7 @@ Full list of sections and features incorporated in the Github Actions Plugin
     1. Navigate to desired repo
     2. Under actions, add workflow pref PHP workflow
     3. Edit the file match the php file attached
+    ~Current Version:1.4~
 
 # SETUP SECRETS
 
