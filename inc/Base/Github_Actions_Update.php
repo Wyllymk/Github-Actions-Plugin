@@ -87,7 +87,6 @@ if ( ! class_exists( 'Github_Actions_Update' ) ) {
             $response->requires       = $remote->requires;
             $response->author         = $remote->author;
             $response->author_profile = $remote->author_profile;
-            $response->homepage       = $remote->homepage;
             $response->download_link  = $remote->download_url;
             $response->trunk          = $remote->download_url;
             $response->requires_php   = $remote->requires_php;

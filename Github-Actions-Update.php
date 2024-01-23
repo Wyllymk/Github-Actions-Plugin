@@ -66,8 +66,8 @@ class WP_GitHub_Updater {
 	 * @return void
 	 */
 	public function __construct( $config = array() ) {
-        error_log(dirname( GITHUB_ACTIONS_PLUGIN_NAME ));
-		$defaults = array(
+
+        $defaults = array(
 			'slug' => GITHUB_ACTIONS_PLUGIN_NAME,
 			'proper_folder_name' => dirname( GITHUB_ACTIONS_PLUGIN_NAME ),
 			'sslverify' => true,

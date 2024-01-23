@@ -2,7 +2,7 @@
 /**
  * @package             GithubActions
  * @author              Wilson
- * @copyright           2024 Wilson
+ * @copyright           2023 - 2024 Wilson
  * 
  * @wordpress-plugin
  * Plugin Name:             Github Actions
@@ -81,7 +81,7 @@ if(class_exists('GAP\\Github_Actions_Init')){
 add_action( 'admin_init', 'github_plugin_updater_test_init' );
 function github_plugin_updater_test_init() {
 
-	include_once 'Github_Actions_Update.php';
+	include_once 'Github-Actions-Update.php';
 
 	define( 'WP_GITHUB_FORCE_UPDATE', true );
 
@@ -89,7 +89,7 @@ function github_plugin_updater_test_init() {
 
 		$config = array(
 			'slug' => GITHUB_ACTIONS_PLUGIN_NAME,
-			'proper_folder_name' => 'github-actions-plugin',
+			'proper_folder_name' => dirname( GITHUB_ACTIONS_PLUGIN_NAME ),
 			'api_url' => 'https://api.github.com/repos/Wyllymk/Github-Actions-Plugin',
 			'raw_url' => 'https://raw.github.com/Wyllymk/Github-Actions-Plugin/production',
 			'github_url' => 'https://github.com/Wyllymk/Github-Actions-Plugin',

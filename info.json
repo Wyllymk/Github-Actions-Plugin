@@ -1,6 +1,6 @@
 {
-  "name": "Github Actions",
-  "slug": "github-actions",
+  "name": "Github Actions Plugin",
+  "slug": "Github-Actions-Plugin",
   "author": "<a href='https://wilsondevops.com'>Wilson Mbuthia</a>",
   "author_profile": "https://profiles.wordpress.org/wylly",
   "version": "0.0.1",
