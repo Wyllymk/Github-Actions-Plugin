@@ -76,7 +76,8 @@ if( ! class_exists('Github_Actions_Webhook')){
             // Adjust these paths based on your WordPress setup
             $theme_directory = get_theme_root() . '/' . $github_repository_name;
             
-            $git_command = "git pull origin {$repository_reference} --force 2>&1";
+            // $git_command = "git pull origin {$repository_reference} --force 2>&1";
+            $git_command = "git fetch --all && git reset --hard origin/{$repository_reference} 2>&1";
 
     
             // Move to the theme directory
@@ -85,7 +86,7 @@ if( ! class_exists('Github_Actions_Webhook')){
             // Execute the Git pull command
             exec($git_command . ' 2>&1', $output, $return_code);
 
-            / echo 'Git pull command: ' . $git_command . '<br>';
+            // echo 'Git pull command: ' . $git_command . '<br>';
             // echo 'Git pull output: ' . implode('<br>', $output) . '<br>';
             // echo 'Git pull return code: ' . $return_code . '<br>';
     
